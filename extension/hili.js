@@ -23,6 +23,7 @@ const hiliEl = document.createElement('div');
 hiliEl.innerText = 'Highlight';
 hiliEl.style.background = 'rgba(0,0,0,0.8)';
 hiliEl.style.fontFamily = 'sans-serif';
+hiliEl.style.fontSize = '10px';
 hiliEl.style.color = '#fff';
 hiliEl.style.cursor = 'pointer';
 hiliEl.style.padding = '2px';
