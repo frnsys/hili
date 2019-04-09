@@ -18,6 +18,11 @@ Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by defa
 
 ## Usage
 
-Highlight some text on a page, and click the "Highlight" button that appears
+Once the extension is installed:
+
+1. Run the server, e.g. `python server.py ~/notes/annos.json`
+2. Highlight some text on a page, and click the "Highlight" button that appears
+
+I suggest running the server on system startup as a background process. E.g. you could add `cd ~/hili; python server.py ~/notes/annos.json` to your `~/.xinitrc` or equivalent file.
 
 ![](shot.gif)
