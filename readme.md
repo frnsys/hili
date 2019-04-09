@@ -21,3 +21,5 @@ Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by defa
 Highlight some text on a page, and click the "Highlight" button that appears
 
 ![](demo.gif)
+
+![](shot.png)
