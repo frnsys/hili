@@ -2,12 +2,12 @@
 // <https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus/ContextType>
 browser.contextMenus.create({
   id: "highlight-text",
-  title: "Highlight",
+  title: "Highlight text",
   contexts: ["selection"]
 });
 browser.contextMenus.create({
   id: "highlight-image",
-  title: "Highlight",
+  title: "Highlight image",
   contexts: ["image"]
 });
 
