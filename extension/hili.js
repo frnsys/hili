@@ -2,11 +2,6 @@
 const port = 8888;
 const host = `http://localhost:${port}`;
 
-// Current selection
-let selection = null;
-let text = null;
-let html = null;
-
 function post(data) {
   fetch(host, {
     headers: {
@@ -17,41 +12,6 @@ function post(data) {
     body: JSON.stringify(data)
   }).catch(err => { throw err });
 }
-
-// Setup highlight button
-const hiliEl = document.createElement('div');
-hiliEl.innerText = 'Highlight';
-hiliEl.style.background = 'rgba(0,0,0,0.8)';
-hiliEl.style.fontFamily = 'sans-serif';
-hiliEl.style.fontSize = '10px';
-hiliEl.style.color = '#fff';
-hiliEl.style.cursor = 'pointer';
-hiliEl.style.padding = '2px';
-hiliEl.style.position = 'fixed';
-hiliEl.style.display = 'none';
-hiliEl.addEventListener('click', function() {
-  if (text) {
-    let data = {
-      href: window.location.href,
-      title: document.title,
-      time: +new Date(),
-      text: text,
-      html: html
-    };
-    post(data);
-  }
-});
-document.body.appendChild(hiliEl);
-
-// Adjust highlight button position
-window.addEventListener('scroll', function() {
-  let text = selection.toString().trim();
-  if (text) {
-    let bb = selection.getRangeAt(0).getBoundingClientRect();
-    hiliEl.style.left = `${bb.left}px`;
-    hiliEl.style.top = `${bb.top + bb.height}px`;
-  }
-});
 
 // https://stackoverflow.com/a/5222955
 function getSelectionHtml(sel) {
@@ -72,33 +32,59 @@ function getSelectionHtml(sel) {
     return html;
 }
 
-// Resets
-window.addEventListener('blur', function() {
-  hiliEl.style.display = 'none';
-});
-document.body.addEventListener('mousemove', function() {
-  let sel = window.getSelection();
-  let text = sel.toString().trim();
-  if (!text) hiliEl.style.display = 'none';
-});
-document.body.addEventListener('mousedown', function(ev) {
-  if (ev.target !== hiliEl) {
-    hiliEl.style.display = 'none';
-  }
-});
-
-// Selection
-document.body.addEventListener('mouseup', function(ev) {
-  if (ev.target == hiliEl) return;
+function highlightText() {
   selection = window.getSelection();
   text = selection.toString().trim();
   if (text) {
     html = getSelectionHtml(selection);
-    let bb = selection.getRangeAt(0).getBoundingClientRect();
-    hiliEl.style.display = 'block';
-    hiliEl.style.left = `${bb.left}px`;
-    hiliEl.style.top = `${bb.top + bb.height}px`;
-  } else {
-    hiliEl.style.display = 'none';
+    let data = {
+      href: window.location.href,
+      title: document.title,
+      time: +new Date(),
+      text: text,
+      html: html
+    };
+    post(data);
+  }
+}
+
+function highlightImage(url) {
+  let text = prompt('Description');
+
+  if (text !== null) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'blob';
+    xhr.onload = function(){
+      let fr = new FileReader();
+      fr.onload = function() {
+        let b64 = this.result.replace(/^data:image\/[a-z]+;base64,/, '');
+        let data = {
+          href: window.location.href,
+          title: document.title,
+          time: +new Date(),
+          file: {
+            src: url,
+            data: b64,
+            type: xhr.response.type
+          },
+          text: text
+        };
+        post(data);
+      };
+      fr.readAsDataURL(xhr.response);
+    };
+    xhr.send();
+  }
+}
+
+browser.runtime.onMessage.addListener(function(message) {
+  switch (message.type) {
+    case 'highlight-text':
+      highlightText();
+      break;
+    case 'highlight-image':
+      highlightImage(message.src);
+      break;
   }
 });
