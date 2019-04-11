@@ -1,8 +1,13 @@
+import os
+import json
+import base64
+import hashlib
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 parser = argparse.ArgumentParser(description='A simple fake server for testing your API client.')
 parser.add_argument('FILE', type=str, help='File to save received data')
+parser.add_argument('UPLOAD_DIR', type=str, help='Directory to save uploaded files')
 parser.add_argument('-p', '--port', type=int, dest='PORT', default=8888, help='Port for server')
 args = parser.parse_args()
 
@@ -18,9 +23,30 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
+        data = self.data_string.decode('utf8')
+        data = json.loads(data)
+
+        # If a file is included, save it and save only the filename
+        if 'file' in data:
+            # Assume that data is base64 encoded
+            b64 = base64.b64decode(data['file']['data'])
+
+            # Generate file name by hashing file data
+            # and extension based on specified content type
+            fname = hashlib.sha1(b64).hexdigest()
+            ext = data['file']['type'].split('/')[-1]
+            fname = '{}.{}'.format(fname, ext)
+            with open(os.path.join(args.UPLOAD_DIR, fname), 'wb') as f:
+                f.write(b64)
+
+            # Remove original data,
+            # save only filename
+            del data['file']['data']
+            data['file']['name'] = fname
+
         # Save data
         with open(args.FILE, 'a') as f:
-            f.write(self.data_string.decode('utf8') + '\n')
+            f.write(json.dumps(data) + '\n')
 
         # Response
         self.wfile.write(b'ok')

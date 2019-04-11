@@ -10,9 +10,9 @@ To install (Firefox), open `about:debugging` and choose "Load Temporary Add-on",
 
 `server.py` launches a simple HTTP server that accepts any data at `localhost:<PORT>/` and saves it to a specified file.
 
-Basic usage is: `python server.py <SAVE FILE> [-p <PORT>]`
+Basic usage is: `python server.py <SAVE FILE> <UPLOAD DIRECTORY> [-p <PORT>]`
 
-For example: `python server.py ~/notes/annos.json -p 8888`
+For example: `python server.py ~/notes/annos.json ~/notes/saved_files -p 8888`
 
 Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by default).
 
@@ -20,9 +20,9 @@ Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by defa
 
 Once the extension is installed:
 
-1. Run the server, e.g. `python server.py ~/notes/annos.json`
+1. Run the server, e.g. `python server.py ~/notes/annos.json ~/notes/saved_files`
 2. Highlight some text on a page, and click the "Highlight" button that appears
 
-I suggest running the server on system startup as a background process. E.g. you could add `cd ~/hili; python server.py ~/notes/annos.json` to your `~/.xinitrc` or equivalent file.
+I suggest running the server on system startup as a background process. E.g. you could add `cd ~/hili; python server.py ~/notes/annos.json ~/notes/saved_files` to your `~/.xinitrc` or equivalent file.
 
-![](shot.gif)
+![](demo.gif)
