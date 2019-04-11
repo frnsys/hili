@@ -25,4 +25,4 @@ Once the extension is installed:
 
 I suggest running the server on system startup as a background process. E.g. you could add `cd ~/hili; python server.py ~/notes/annos.json ~/notes/saved_files` to your `~/.xinitrc` or equivalent file.
 
-![](shot.gif)
+![](demo.gif)
