@@ -39,3 +39,17 @@ Once the extension is installed:
 I suggest running the server on system startup as a background process. E.g. you could add `cd ~/hili; python server.py ~/notes/annos.json ~/notes/saved_files` to your `~/.xinitrc` or equivalent file.
 
 ![](demo.gif)
+
+## Listener scripts
+
+If you want something to happen whenever a new highlight is received, you can do something like:
+
+```
+#!/bin/bash
+ANNOS_PATH=~/notes/web/annos.json
+
+tail -n 0 -f $ANNOS_PATH | while read line; do
+    # do something here, e.g. pass $line to another script
+    echo $line
+done
+```
