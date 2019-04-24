@@ -21,3 +21,11 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
       break;
   }
 })
+
+browser.runtime.onMessage.addListener(function(data) {
+  browser.notifications.create({
+    'type': 'basic',
+    'title': 'Highlighted',
+    'message': data.text
+  });
+});

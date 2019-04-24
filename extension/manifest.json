@@ -18,6 +18,7 @@
   },
   "permissions" : [
     "<all_urls>",
-    "contextMenus"
+    "contextMenus",
+    "notifications"
   ]
 }

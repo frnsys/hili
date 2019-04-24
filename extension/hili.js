@@ -11,6 +11,9 @@ function post(data) {
     method: 'POST',
     body: JSON.stringify(data)
   }).catch(err => { throw err });
+
+  // So we can send a confirmation notification
+  browser.runtime.sendMessage(data);
 }
 
 // https://stackoverflow.com/a/5222955
