@@ -1,6 +1,7 @@
 // Config
 const port = 8888;
 const host = `http://localhost:${port}`;
+let last_tags = '';
 
 function post(data) {
   fetch(host, {
@@ -36,6 +37,9 @@ function getSelectionHtml(sel) {
 }
 
 function highlightText() {
+  let tags = prompt('Tags', last_tags).split(',').map((t) => t.trim());
+  if (tags == null) return;
+  last_tags = tags.join(', ');
   selection = window.getSelection();
   text = selection.toString().trim();
   if (text) {
@@ -45,7 +49,8 @@ function highlightText() {
       title: document.title,
       time: +new Date(),
       text: text,
-      html: html
+      html: html,
+      tags: tags
     };
     post(data);
   }
@@ -53,6 +58,9 @@ function highlightText() {
 
 function highlightImage(url) {
   let text = prompt('Description');
+  let tags = prompt('Tags', last_tags).split(',').map((t) => t.trim());
+  if (tags == null) return;
+  last_tags = tags.join(', ');
 
   if (text !== null) {
     let xhr = new XMLHttpRequest();
@@ -71,7 +79,8 @@ function highlightImage(url) {
             data: b64,
             type: xhr.response.type
           },
-          text: text
+          text: text,
+          tags: tags
         };
         post(data);
       };
