@@ -1,20 +1,33 @@
 // Config
-const port = 8888;
-const host = `http://localhost:${port}`;
 let last_tags = '';
 
 function post(data) {
-  fetch(host, {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify(data)
-  }).catch(err => { throw err });
-
-  // So we can send a confirmation notification
-  browser.runtime.sendMessage(data);
+  browser.storage.sync.get(['host', 'key']).then((res) => {
+    fetch(res.host, {
+      headers: {
+        'Authentication': res.key,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(data)
+    }).then((res) => {
+      if (!res.ok) {
+        if (res.status == 401) {
+          alert(`hili: Unauthorized (check your authentication key)`);
+        } else {
+          alert(`hili: Bad response from server: ${res.status}`);
+        }
+      } else {
+        // Send a confirmation notification
+        browser.runtime.sendMessage(data);
+      }
+    }, (err) => {
+      alert(`hili: ${err.message}`);
+    });
+  }, (err) => {
+    alert(`hili: ${err.message}`);
+  });
 }
 
 // https://stackoverflow.com/a/5222955

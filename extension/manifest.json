@@ -16,9 +16,18 @@
   "background": {
     "scripts": ["background.js"]
   },
+  "options_ui": {
+    "page": "options.html"
+  },
   "permissions" : [
     "<all_urls>",
     "contextMenus",
-    "notifications"
-  ]
+    "notifications",
+    "storage"
+  ],
+  "applications": {
+    "gecko": {
+      "id": "hili@publicscience.co"
+    }
+  }
 }
