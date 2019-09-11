@@ -5,14 +5,18 @@ const state = {};
 // Confirmation indicator
 const successEl = document.createElement('div');
 successEl.style.position = 'fixed';
-successEl.style.zIndex = 1000000;
-successEl.style.display = 'none';
-successEl.style.top = 0;
-successEl.style.left = 0;
-successEl.style.right = 0;
-successEl.style.width = '100%';
-successEl.style.height = '16px';
+successEl.style.zIndex = 10000000000;
+// successEl.style.display = 'none';
+successEl.style.fontFamily = 'sans-serif';
+successEl.style.fontSize = '12px';
+successEl.style.textAlign = 'center';
+successEl.style.color = '#fff';
+successEl.style.padding = '18px 12px';
+successEl.style.bottom = '12px';
+successEl.style.right = '12px';
+successEl.style.width = '30%';
 successEl.style.background = '#1CBC5F';
+successEl.innerText = 'Success';
 document.body.appendChild(successEl);
 
 function post(data) {
@@ -136,20 +140,19 @@ function setupFrontend() {
   // Setup highlight button
   const hiliEl = document.createElement('div');
   hiliEl.innerText = 'Highlight';
-  hiliEl.style.background = 'rgba(0,0,0,0.8)';
+  hiliEl.style.background = '#000';
   hiliEl.style.fontFamily = 'sans-serif';
   hiliEl.style.fontSize = '12px';
   hiliEl.style.textAlign = 'center';
   hiliEl.style.color = '#fff';
   hiliEl.style.cursor = 'pointer';
-  hiliEl.style.padding = '12px';
+  hiliEl.style.padding = '18px 12px';
   hiliEl.style.position = 'fixed';
-  hiliEl.style.zIndex = 1000;
+  hiliEl.style.zIndex = 10000000000;
   hiliEl.style.display = 'none';
-  hiliEl.style.bottom = 0;
-  hiliEl.style.left = 0;
-  hiliEl.style.right = 0;
-  hiliEl.style.width = '100%';
+  hiliEl.style.bottom = '12px';
+  hiliEl.style.right = '12px';
+  hiliEl.style.width = '30%';
   hiliEl.addEventListener('click', function() {
     // TODO highlight image
     highlightText();
@@ -160,20 +163,8 @@ function setupFrontend() {
   window.addEventListener('blur', function() {
     hiliEl.style.display = 'none';
   });
-  document.body.addEventListener('mousemove', function() {
-    let sel = window.getSelection();
-    let text = sel.toString().trim();
-    if (!text) hiliEl.style.display = 'none';
-  });
-  document.body.addEventListener('mousedown', function(ev) {
-    if (ev.target !== hiliEl) {
-      hiliEl.style.display = 'none';
-    }
-  });
 
-  // Selection
-  document.body.addEventListener('mouseup', function(ev) {
-    if (ev.target == hiliEl) return;
+  document.addEventListener('selectionchange', function(ev) {
     // Update selection
     let selection = window.getSelection();
     state.text = selection.toString().trim();

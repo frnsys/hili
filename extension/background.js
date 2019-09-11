@@ -24,12 +24,7 @@ if (browser.contextMenus) {
         break;
     }
   })
-
-} else {
-  // <https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/PlatformOs>
-  browser.tabs.sendMessage(tab.id, {type: "highlight-image", src: info.srcUrl});
 }
-
 
 browser.runtime.onMessage.addListener(function(msg, sender) {
   switch (msg.type) {
