@@ -19,6 +19,8 @@ Otherwise, the process is more involved:
 4. This will create an `.xpi` file in `web-ext-artifacts`.
 5. Go to `about:addons`, then `Install Add-on From File`, and select the `.xpi` file.
 
+To install on mobile, the easiest way is to visit this url from your phone: `https://frnsys.com/misc/hili.xpi`.
+
 ## Server
 
 `server.py` launches a simple HTTP server that accepts any data at `localhost:<PORT>/` and saves it to a specified file.
