@@ -1,5 +1,19 @@
-// Config
 let last_tags = '';
+let mobile = false;
+const state = {};
+
+// Confirmation indicator
+const successEl = document.createElement('div');
+successEl.style.position = 'fixed';
+successEl.style.zIndex = 1000000;
+successEl.style.display = 'none';
+successEl.style.top = 0;
+successEl.style.left = 0;
+successEl.style.right = 0;
+successEl.style.width = '100%';
+successEl.style.height = '16px';
+successEl.style.background = '#1CBC5F';
+document.body.appendChild(successEl);
 
 function post(data) {
   browser.storage.sync.get(['host', 'key']).then((res) => {
@@ -20,7 +34,11 @@ function post(data) {
         }
       } else {
         // Send a confirmation notification
-        browser.runtime.sendMessage(data);
+        browser.runtime.sendMessage({type: "highlighted", data});
+        successEl.style.display = 'block';
+        setTimeout(() => {
+          successEl.style.display = 'none';
+        }, 200);
       }
     }, (err) => {
       alert(`hili: ${err.message}`);
@@ -32,31 +50,27 @@ function post(data) {
 
 // https://stackoverflow.com/a/5222955
 function getSelectionHtml(sel) {
-    var html = '';
-    if (typeof window.getSelection != 'undefined') {
-        if (sel.rangeCount) {
-            var container = document.createElement('div');
-            for (var i = 0, len = sel.rangeCount; i < len; ++i) {
-                container.appendChild(sel.getRangeAt(i).cloneContents());
-            }
-            html = container.innerHTML;
-        }
-    } else if (typeof document.selection != 'undefined') {
-        if (document.selection.type == 'Text') {
-            html = document.selection.createRange().htmlText;
-        }
+  if (sel.rangeCount) {
+    var container = document.createElement('div');
+    for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+      container.appendChild(sel.getRangeAt(i).cloneContents());
     }
-    return html;
+    html = container.innerHTML;
+  }
+  return html;
 }
 
 function highlightText() {
-  let tags = prompt('Tags', last_tags).split(',').map((t) => t.trim());
-  if (tags == null) return;
-  last_tags = tags.join(', ');
-  selection = window.getSelection();
-  text = selection.toString().trim();
-  if (text) {
+  let {text, html} = state;
+  if (!mobile) {
+    let selection = window.getSelection();
+    text = selection.toString().trim();
     html = getSelectionHtml(selection);
+  }
+  if (text) {
+    let tags = prompt('Tags', last_tags).split(',').map((t) => t.trim());
+    if (tags == null) return;
+    last_tags = tags.join(', ');
     let data = {
       href: window.location.href,
       title: document.title,
@@ -111,5 +125,65 @@ browser.runtime.onMessage.addListener(function(message) {
     case 'highlight-image':
       highlightImage(message.src);
       break;
+    case 'init-frontend':
+      mobile = true;
+      setupFrontend();
+      break;
   }
 });
+
+function setupFrontend() {
+  // Setup highlight button
+  const hiliEl = document.createElement('div');
+  hiliEl.innerText = 'Highlight';
+  hiliEl.style.background = 'rgba(0,0,0,0.8)';
+  hiliEl.style.fontFamily = 'sans-serif';
+  hiliEl.style.fontSize = '12px';
+  hiliEl.style.textAlign = 'center';
+  hiliEl.style.color = '#fff';
+  hiliEl.style.cursor = 'pointer';
+  hiliEl.style.padding = '12px';
+  hiliEl.style.position = 'fixed';
+  hiliEl.style.zIndex = 1000;
+  hiliEl.style.display = 'none';
+  hiliEl.style.bottom = 0;
+  hiliEl.style.left = 0;
+  hiliEl.style.right = 0;
+  hiliEl.style.width = '100%';
+  hiliEl.addEventListener('click', function() {
+    // TODO highlight image
+    highlightText();
+  });
+  document.body.appendChild(hiliEl);
+
+  // Resets
+  window.addEventListener('blur', function() {
+    hiliEl.style.display = 'none';
+  });
+  document.body.addEventListener('mousemove', function() {
+    let sel = window.getSelection();
+    let text = sel.toString().trim();
+    if (!text) hiliEl.style.display = 'none';
+  });
+  document.body.addEventListener('mousedown', function(ev) {
+    if (ev.target !== hiliEl) {
+      hiliEl.style.display = 'none';
+    }
+  });
+
+  // Selection
+  document.body.addEventListener('mouseup', function(ev) {
+    if (ev.target == hiliEl) return;
+    // Update selection
+    let selection = window.getSelection();
+    state.text = selection.toString().trim();
+    state.html = getSelectionHtml(selection);
+    if (state.text) {
+      hiliEl.style.display = 'block';
+    } else {
+      hiliEl.style.display = 'none';
+    }
+  });
+}
+
+browser.runtime.sendMessage({type: 'init'});
