@@ -3,9 +3,9 @@
 Usage: python viewer.py FILE UPLOAD_DIR
 """
 
-import os
 import json
 import argparse
+from collections import defaultdict
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 parser = argparse.ArgumentParser(description='A simple server view saved JSON data')
@@ -44,7 +44,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                             border-bottom: 2px solid black;
                             font-family: sans-serif;
                         }
+                        .highlight {
+                            margin: 2em 0;
+                        }
                         .tags {
+                            color: #888;
                             margin-top: 1em;
                             font-size: 0.8em;
                         }
@@ -58,37 +62,40 @@ class RequestHandler(BaseHTTPRequestHandler):
                 </head>
                 <body>''']
 
-        for d in data[::-1]:
-            if 'file' in d:
-                fname = d['file']['name']
-                html.append('''
-                    <article>
-                        <h4><a href="{href}">{title}</a></h4>
-                        <img src="{src}">
-                        <p>{text}</p>
-                        <div class="tags"><em>{tags}</em></div>
-                    </article>
-                '''.format(
-                    href=d['href'],
-                    title=d['title'],
-                    # src=os.path.join(args.UPLOAD_DIR, fname),
-                    src=d['file']['src'],
-                    text=d['text'],
-                    tags=', '.join(d['tags'])
-                ))
-            else:
-                html.append('''
-                    <article>
-                        <h4><a href="{href}">{title}</a></h4>
-                        {html}
-                        <div class="tags"><em>{tags}</em></div>
-                    </article>
-                '''.format(
-                    href=d['href'],
-                    title=d['title'],
-                    html=d['html'],
-                    tags=', '.join(d['tags'])
-                ))
+        grouped = defaultdict(list)
+        for d in data:
+            grouped[d['href']].append(d)
+
+        for href, group in sorted(grouped.items(), key=lambda g: -max([d['time'] for d in g[1]])):
+            html.append('''
+                <article>
+                    <h4><a href="{href}">{title}</a></h4>'''.format(href=href, title=group[0]['title']))
+            for d in group:
+                if 'file' in d:
+                    # fname = d['file']['name']
+                    html.append('''
+                        <div class="highlight">
+                            <img src="{src}">
+                            <p>{text}</p>
+                            <div class="tags"><em>{tags}</em></div>
+                        </div>
+                    '''.format(
+                        # src=os.path.join(args.UPLOAD_DIR, fname),
+                        src=d['file']['src'],
+                        text=d['text'],
+                        tags=', '.join(d['tags'])
+                    ))
+                else:
+                    html.append('''
+                        <div class="highlight">
+                            {html}
+                            <div class="tags"><em>{tags}</em></div>
+                        </div>
+                    '''.format(
+                        html=d['html'],
+                        tags=', '.join(d['tags'])
+                    ))
+            html.append('</article>')
 
         html.append('</body></html>')
 
