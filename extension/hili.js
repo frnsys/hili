@@ -1,12 +1,16 @@
 let last_tags = '';
 let mobile = false;
 const state = {};
+const TIMEOUT = 5000;
+
+// Queue for offline highlights
+const queue = [];
 
 // Confirmation indicator
 const successEl = document.createElement('div');
 successEl.style.position = 'fixed';
 successEl.style.zIndex = 10000000000;
-// successEl.style.display = 'none';
+successEl.style.display = 'none';
 successEl.style.fontFamily = 'sans-serif';
 successEl.style.fontSize = '12px';
 successEl.style.textAlign = 'center';
@@ -19,9 +23,34 @@ successEl.style.background = '#1CBC5F';
 successEl.innerText = 'Success';
 document.body.appendChild(successEl);
 
+// Queue indicator/counter
+const queueEl = document.createElement('div');
+queueEl.style.position = 'fixed';
+queueEl.style.zIndex = 10000000000;
+queueEl.style.display = 'none';
+queueEl.style.userSelect = 'none';
+queueEl.style.fontFamily = 'sans-serif';
+queueEl.style.fontSize = '10px';
+queueEl.style.textAlign = 'center';
+queueEl.style.color = '#000';
+queueEl.style.padding = '6px';
+queueEl.style.bottom = '12px';
+queueEl.style.left = '12px';
+queueEl.style.background = '#f4dd29';
+document.body.appendChild(queueEl);
+
+function fetchTimeout(url, options, timeout) {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Timeout')), timeout)
+    })
+  ]);
+}
+
 function post(data) {
-  browser.storage.sync.get(['host', 'key']).then((res) => {
-    fetch(res.host, {
+  return browser.storage.sync.get(['host', 'key']).then((res) => {
+    return fetchTimeout(res.host, {
       headers: {
         'Authentication': res.key,
         'Accept': 'application/json',
@@ -29,7 +58,7 @@ function post(data) {
       },
       method: 'POST',
       body: JSON.stringify(data)
-    }).then((res) => {
+    }, TIMEOUT).then((res) => {
       if (!res.ok) {
         if (res.status == 401) {
           alert(`hili: Unauthorized (check your authentication key)`);
@@ -45,12 +74,39 @@ function post(data) {
         }, 200);
       }
     }, (err) => {
-      alert(`hili: ${err.message}`);
+      // Queue to retry later
+      // There doesn't seem to be any "correct"
+      // way of catching a NetworkError; it's
+      // very browser-dependent. Assuming
+      // that if we got here, something with the request failed,
+      // and we need to retry.
+      queue.push(data);
+      queueEl.style.display = 'block';
+      queueEl.innerText = queue.length;
+      // alert(`hili: ${err.message}`);
     });
   }, (err) => {
     alert(`hili: ${err.message}`);
   });
 }
+
+// Retry queued
+setInterval(() => {
+  if (queue.length > 0) {
+    console.log('Retrying...')
+    let d = queue.pop();
+    while (d) {
+      post(d).then(() => {
+        if (queue.length === 0) {
+            queueEl.style.display = 'none';
+        } else {
+            queueEl.innerText = retry.length;
+        }
+      });
+      d = queue.pop();
+    }
+  }
+}, 10000);
 
 // https://stackoverflow.com/a/5222955
 function getSelectionHtml(sel) {
@@ -178,3 +234,9 @@ function setupFrontend() {
 }
 
 browser.runtime.sendMessage({type: 'init'});
+
+window.onbeforeunload = () => {
+  if (queue.length > 0) {
+    return 'You have unsaved highlights. Continue?';
+  }
+};
