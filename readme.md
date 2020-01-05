@@ -42,6 +42,8 @@ I suggest running the server on system startup as a background process. E.g. you
 
 ![](demo.gif)
 
+You can also view your highlights by visiting the server address, e.g. `localhost:8888`
+
 ## Listener scripts
 
 If you want something to happen whenever a new highlight is received, you can do something like:
