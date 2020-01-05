@@ -81,7 +81,7 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
             for k, v in d.items():
                 item.append('{}:\t{}'.format(k, v).encode('utf8'))
             text.append(b'\n'.join(item))
-        self.wfile.write(b'\n\n'.join(text))
+        self.wfile.write(b'\n\n'.join(text[::-1]))
 
 
 if __name__ == '__main__':
