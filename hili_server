@@ -24,8 +24,11 @@ runsetup() {
 	fi
 }
 
-
-CMD="python server.py annos.json saved_files -p $INNER_PORT"
+KEY_FLAG=""
+if [[ ! -z "$KEY" ]]; then
+	KEY_FLAG="-k $KEY"
+fi
+CMD="python server.py annos.json saved_files -p $INNER_PORT $KEY_FLAG"
 runsetup $@ && docker run -d \
 	-p $HOST_PORT:$INNER_PORT \
 	-v $(pwd)/$ANNS_FILE:/app/annos.json \
