@@ -8,4 +8,3 @@ RUN git clone --single-branch --branch fix/lxml-requests-reqs https://github.com
 RUN cd nom && pip install .
 ## ADD SERVER
 ADD server.py /app/server.py
-EXPOSE 8000
