@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 IMGNAME=hili_server
-HOST_PORT=4000
-INNER_PORT=8000
 
 if [[ "$(docker images -q $IMGNAME 2> /dev/null)" == "" ]]; then
 	echo "Building $IMGNAME image locally..."
@@ -24,10 +22,17 @@ runsetup() {
 	fi
 }
 
+INNER_PORT=8000
+HOST_PORT=4000
+if [[ ! -z "$PORT" ]]; then
+	HOST_PORT=$PORT
+fi
+
 KEY_FLAG=""
 if [[ ! -z "$KEY" ]]; then
 	KEY_FLAG="-k $KEY"
 fi
+
 CMD="python server.py annos.json saved_files -p $INNER_PORT $KEY_FLAG"
 runsetup $@ && docker run -d \
 	-p $HOST_PORT:$INNER_PORT \
@@ -35,4 +40,4 @@ runsetup $@ && docker run -d \
 	-v $(pwd)/$ASSETS_DIR:/app/saved_files \
 	hili_server $CMD
 
-echo "hili_server running in docker, available on port $HOST_PORT"
+echo "hili_server running in docker, available via host port $HOST_PORT"

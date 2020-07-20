@@ -29,7 +29,6 @@ Basic usage is: `python server.py <SAVE FILE> <UPLOAD DIRECTORY> [-p <PORT>]`
 
 For example: `python server.py ~/notes/annos.json ~/notes/saved_files -p 8888`
 
-Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by default).
 
 ## Usage
 
@@ -57,3 +56,12 @@ tail -n 0 -f $ANNOS_PATH | while read line; do
     echo $line
 done
 ```
+## Running via Docker
+
+If you use Docker, you can run the server as a container via the `hili_server`
+script:
+```
+PORT=4000 KEY=mykey ./hili_server ~/notes/annos.json ~/notes/saved_files
+```
+
+
