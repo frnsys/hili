@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+IMGNAME=hili_server
+HOST_PORT=4000
+INNER_PORT=8000
+
+if [[ "$(docker images -q $IMGNAME 2> /dev/null)" == "" ]]; then
+	echo "Building $IMGNAME image locally..."
+	docker build -t $IMGNAME .
+	echo "$IMGNAME image built."
+fi
+
+ANNS_FILE="anns.json"
+ASSETS_DIR="assets"
+hasargs() {
+	if [[ "$#" -ne 2 ]]; then
+		echo "No arguments passed, using 'anns.json' and 'assets'"
+	else
+		ANNS_FILE=$1
+		ASSETS_DIR=$2
+	fi
+
+}
+
+if [ ! -f "$ANNS_FILE" ]; then
+	touch $ANNS_FILE
+	echo "Created '$ANNS_FILE' for annotations."
+fi
+
+CMD="python server.py annos.json saved_files -p $INNER_PORT"
+hasargs $@ && docker run -d \
+	-p $HOST_PORT:$INNER_PORT \
+	-v $(pwd)/$ANNS_FILE:/app/annos.json \
+	-v $(pwd)/$ASSETS_DIR:/app/saved_files \
+	hili_server $CMD
+
+echo "hili_server running in docker, available on port $HOST_PORT"
