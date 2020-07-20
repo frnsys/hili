@@ -11,23 +11,22 @@ fi
 
 ANNS_FILE="anns.json"
 ASSETS_DIR="assets"
-hasargs() {
+runsetup() {
 	if [[ "$#" -ne 2 ]]; then
 		echo "No arguments passed, using 'anns.json' and 'assets'"
 	else
 		ANNS_FILE=$1
 		ASSETS_DIR=$2
 	fi
-
+	if [ ! -f "$ANNS_FILE" ]; then
+		touch $ANNS_FILE
+		echo "Created '$ANNS_FILE' for annotations."
+	fi
 }
 
-if [ ! -f "$ANNS_FILE" ]; then
-	touch $ANNS_FILE
-	echo "Created '$ANNS_FILE' for annotations."
-fi
 
 CMD="python server.py annos.json saved_files -p $INNER_PORT"
-hasargs $@ && docker run -d \
+runsetup $@ && docker run -d \
 	-p $HOST_PORT:$INNER_PORT \
 	-v $(pwd)/$ANNS_FILE:/app/annos.json \
 	-v $(pwd)/$ASSETS_DIR:/app/saved_files \

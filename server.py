@@ -86,6 +86,6 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     print('Running on port', args.PORT)
-    server = HTTPServer(('localhost', args.PORT), JSONRequestHandler)
+    server = HTTPServer(("0.0.0.0", args.PORT), JSONRequestHandler)
     server.serve_forever()
 
