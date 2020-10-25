@@ -34,9 +34,9 @@ Instead you can use this collection id: `14770219` and user id: `hili` or add it
 
 Basic usage is: `python server.py <SAVE FILE> <UPLOAD DIRECTORY> [-p <PORT>]`
 
-For example: `python server.py ~/notes/annos.json ~/notes/saved_files -p 8888`
+For example: `python server.py ~/notes/annos.json ~/notes/saved_files -p 8888` (`localhost:8888` is the default endpoint).
 
-Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by default).
+You can visit this server (e.g. `localhost:8888`) to view your highlights.
 
 You can also replace this server with whatever server you want, using `server.py` as a starting point. In the extension options you can specify any endpoint to send the selections to.
 
