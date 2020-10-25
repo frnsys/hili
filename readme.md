@@ -1,6 +1,8 @@
 # hili
 
-Firefox extension to highlight and save text from the web.
+Firefox extension to highlight and save text and images from the web.
+
+If you are offline, `hili` queues the snippets to send when a connection returns (you need to leave the tab open until they are successfully sent; there's a little indicator that lets you know how many snippets are queued).
 
 ## Extension
 
@@ -19,7 +21,12 @@ Otherwise, the process is more involved:
 4. This will create an `.xpi` file in `web-ext-artifacts`.
 5. Go to `about:addons`, then `Install Add-on From File`, and select the `.xpi` file.
 
+You can also install it from here: <https://addons.mozilla.org/en-US/firefox/addon/hili/>
+
+_Note this no longer works because the latest Firefox for Android removes support for sideloading extensions (Fenix)_:
 To install on mobile, the easiest way is to visit this url from your phone: `https://frnsys.com/misc/hili.xpi`.
+
+Instead you can use this collection id: `14770219` and user id: `hili` or add it to your own collection.
 
 ## Server
 
@@ -30,6 +37,8 @@ Basic usage is: `python server.py <SAVE FILE> <UPLOAD DIRECTORY> [-p <PORT>]`
 For example: `python server.py ~/notes/annos.json ~/notes/saved_files -p 8888`
 
 Make sure `PORT` is set to the same value in `extension/hili.js` (`8888` by default).
+
+You can also replace this server with whatever server you want, using `server.py` as a starting point. In the extension options you can specify any endpoint to send the selections to.
 
 ## Usage
 
