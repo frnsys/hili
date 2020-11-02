@@ -32,9 +32,11 @@ Instead you can use this collection id: `14770219` and user id: `hili` or add it
 
 `server.py` launches a simple HTTP server that accepts any data at `localhost:<PORT>/` and saves it to a specified file.
 
-Basic usage is: `python server.py <SAVE FILE> <UPLOAD DIRECTORY> [-p <PORT>]`
+Basic usage is: `python server.py <SAVE FILE> <UPLOAD DIRECTORY> [-p <PORT>] [-k <AUTH_KEY>]`
 
 For example: `python server.py ~/notes/annos.json ~/notes/saved_files -p 8888` (`localhost:8888` is the default endpoint).
+
+You can specify an authentication key with `-k`. Only requests with this key will be accepted by the server; use the settings page to configure `hili` to use this key (see below in `Settings`).
 
 You can visit this server (e.g. `localhost:8888`) to view your highlights.
 
@@ -52,6 +54,10 @@ I suggest running the server on system startup as a background process. E.g. you
 ![](demo.gif)
 
 You can also view your highlights by visiting the server address, e.g. `localhost:8888`
+
+## Settings
+
+You can configure the url that `hili` sends to, and an optional secret key (see the `Server` section above), from the settings page.
 
 ## Listener scripts
 
