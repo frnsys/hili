@@ -2,7 +2,7 @@
   "description": "Highlight",
   "manifest_version": 2,
   "name": "hili",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "homepage_url": "https://github.com/frnsys/hili",
   "icons": {
     "48": "icons/icon-48.png"

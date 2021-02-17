@@ -181,11 +181,14 @@ function highlightImage(url) {
 const marketingRegex =  /(utm_.+|mc_.+|cmpid|truid|CMP)/;
 function cleanUrl(url) {
   url = new URL(url);
-  [...url.searchParams.keys()].forEach((k) => {
-    if (marketingRegex.test(k)) {
-      url.searchParams.delete(k)
+  let toDelete = new Set();
+  for (let entry of url.searchParams) { 
+    let [key, val] = entry;
+    if (marketingRegex.test(key)) {
+      toDelete.add(key);
     }
-  });
+  }
+  toDelete.forEach((k) => url.searchParams.delete(k));
   return url.href;
 }
 
