@@ -132,7 +132,7 @@ function highlightText() {
     if (tags == null) return;
     last_tags = tags.join(', ');
     let data = {
-      href: window.location.href,
+      href: cleanUrl(window.location.href),
       title: document.title,
       time: +new Date(),
       text: text,
@@ -158,7 +158,7 @@ function highlightImage(url) {
       fr.onload = function() {
         let b64 = this.result.replace(/^data:image\/[a-z]+;base64,/, '');
         let data = {
-          href: window.location.href,
+          href: cleanUrl(window.location.href),
           title: document.title,
           time: +new Date(),
           file: {
@@ -175,6 +175,18 @@ function highlightImage(url) {
     };
     xhr.send();
   }
+}
+
+// Remove marketing params from urls
+const marketingRegex =  /(utm_.+|mc_.+|cmpid|truid|CMP)/;
+function cleanUrl(url) {
+  url = new URL(url);
+  [...url.searchParams.keys()].forEach((k) => {
+    if (marketingRegex.test(k)) {
+      url.searchParams.delete(k)
+    }
+  });
+  return url.href;
 }
 
 browser.runtime.onMessage.addListener(function(message) {
