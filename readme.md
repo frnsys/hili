@@ -26,7 +26,7 @@ You can also install it from here: <https://addons.mozilla.org/en-US/firefox/add
 _Note this no longer works because the latest Firefox for Android removes support for sideloading extensions (Fenix)_:
 To install on mobile, the easiest way is to visit this url from your phone: `https://frnsys.com/misc/hili.xpi`.
 
-Instead you can use this collection id: `14770219` and user id: `hili` or add it to your own collection.
+If using the latest version of Firefox Nightly for Android (Fenix), you must first enable [General Extension Support](https://blog.mozilla.org/addons/2020/09/29/expanded-extension-support-in-firefox-for-android-nightly/). You can then use this collection id: `14770219` and user id: `hili` or add it to your own collection.
 
 ## Server
 
