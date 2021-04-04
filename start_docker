@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+IMGNAME=hili
+EXPOSED_PORT=4000
+CONTAINER_PORT=8000
+CLIPS_FILE=clips.xml
+ASSETS_DIR=assets
+KEY_FLAG=""
+
+# build docker image if it doesn't exist
+# TODO: put on docker hub and cut this
+if [[ "$(docker images -q $IMGNAME 2> /dev/null)" == "" ]]; then
+	echo "Building $IMGNAME image locally..."
+	docker build -t $IMGNAME .
+	echo "$IMGNAME image built."
+fi
+
+# read $KEY from environment
+if [[ ! -z "$KEY" ]]; then
+	KEY_FLAG="-k $KEY"
+fi
+
+runsetup() {
+	if [[ "$#" -ne 2 ]]; then
+		echo "No arguments passed, logging to '$CLIPS_FILE' by default"
+	else
+		CLIPS_FILE=$1
+		ASSETS_DIR=$2
+	fi
+	if [ ! -f "$CLIPS_FILE" ]; then
+		touch $CLIPS_FILE
+	fi
+}
+
+STARTUP_CMD="python server.py /app/$CLIPS_FILE /app/$ASSETS_DIR -p $CONTAINER_PORT $KEY_FLAG"
+
+# interpolate necessary args and start container
+runsetup $@ && docker run -d \
+	--name $IMGNAME \
+	-p $EXPOSED_PORT:$CONTAINER_PORT \
+	-v $(pwd)/$CLIPS_FILE:/app/$CLIPS_FILE \
+	-v $(pwd)/$ASSETS_DIR:/app/$ASSETS_DIR \
+	$IMGNAME $STARTUP_CMD
+
+echo "$IMGNAME running in docker, available on port $EXPOSED_PORT"
