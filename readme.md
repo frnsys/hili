@@ -1,18 +1,30 @@
 # hili
 
-Firefox extension to highlight and save text and images from the web.
+Barebones server that listens for clips to save text and images from the web.
+Includes a set of clients to send clips from various apps:
 
-If you are offline, `hili` queues the snippets to send when a connection returns (you need to leave the tab open until they are successfully sent; there's a little indicator that lets you know how many snippets are queued).
+- Firefox extension
+- iOS (via [Scriptable](https://scriptable.app/))
+- [DevonTHINK](https://www.devontechnologies.com/)
+- Python
 
-## Extension
+Firefox is the best supported client. If you are offline, `hili` queues the
+snippets to send when a connection returns (you need to leave the tab open
+until they are successfully sent; there's a little indicator that lets you know
+how many snippets are queued).
 
-To install (Firefox), open `about:debugging` and choose "Load Temporary Add-on", then select the `manifest.json` file. This is temporary (but useful for development); the add-on will be gone next time you run Firefox.
+## Firefox
+
+To install (Firefox), open `about:debugging` and choose "Load Temporary
+Add-on", then select the `manifest.json` file. This is temporary (but useful
+for development); the add-on will be gone next time you run Firefox.
 
 To install it more permanently:
 
 If you're running Firefox Developer Edition, you should be able to:
 1. Zip up the `extensions` directory
-2. Go to `about:addons`, then `Install Add-on From File`, and select the zipped extension
+2. Go to `about:addons`, then `Install Add-on From File`, and select the zipped
+   extension
 
 Otherwise, the process is more involved:
 1. Go to `https://addons.mozilla.org/en-US/developers/addon/api/key/` (create a Firefox account if necessary) and generate credentials
