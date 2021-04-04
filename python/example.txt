@@ -1,0 +1,5 @@
+This is the quote you want to send to hili, usually drawn from whatever is highlighted in an application at the time of clipping.
+*--ENDQUOTE--*
+Here is the note that you've written, normally entered through a prompt at clip time.
+test,example
+https://lachlankermode.com/example-url-for-hili
