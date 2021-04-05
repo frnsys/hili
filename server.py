@@ -19,6 +19,9 @@ parser.add_argument('-p', '--port', type=int, dest='PORT', default=8888, help='P
 parser.add_argument('-k', '--key', type=str, dest='KEY', default=None, help='Secret key to authenticate clients')
 args = parser.parse_args()
 
+def index_with_fallback(obj, fst, snd):
+    return obj.get(fst) if obj.get(fst) is not None else obj.get(snd)
+
 
 class JSONRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -99,6 +102,11 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
                         .highlight {
                             margin: 2em 0;
                         }
+                        .note {
+                            margin-top: 0.5em;
+                            text-align: right;
+                            font-size: 0.9em;
+                        }
                         .tags {
                             color: #888;
                             margin-top: 1em;
@@ -121,7 +129,7 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
         for href, group in sorted(grouped.items(), key=lambda g: -max([d['time'] for d in g[1]])):
             html.append('''
                 <article>
-                    <h4><a href="{href}">{title}</a></h4>'''.format(href=href, title=group[0]['title']))
+                    <h4><a href="{href}">{title}</a></h4>'''.format(href=href, title=group[0].get('title')))
             for d in group:
                 if 'file' in d:
                     # fname = d['file']['name']
@@ -134,17 +142,19 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
                     '''.format(
                         # src=os.path.join(args.UPLOAD_DIR, fname),
                         src=d['file']['src'],
-                        text=d['text'],
+                        text=index_with_fallback(d, 'text', 'note'),
                         tags=', '.join(d['tags'])
                     ))
                 else:
                     html.append('''
                         <div class="highlight">
                             {html}
+                            <div class="note">{note}</div>
                             <div class="tags"><em>{tags}</em></div>
                         </div>
                     '''.format(
-                        html=d['html'],
+                        html=index_with_fallback(d, 'html', 'quote'),
+                        note=index_with_fallback(d, 'text', 'note'),
                         tags=', '.join(d['tags'])
                     ))
             html.append('</article>')
