@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 IMGNAME=hili
 EXPOSED_PORT=4000
-CONTAINER_PORT=8000
-CLIPS_FILE=clips.xml
+CONTAINER_PORT=8888
+CLIPS_FILE=clips.json
 ASSETS_DIR=assets
 KEY_FLAG=""
 
