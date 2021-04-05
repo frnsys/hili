@@ -128,6 +128,7 @@ function highlightText() {
     html = getSelectionHtml(selection);
   }
   if (text) {
+    let note = prompt('Note', '').trim()
     let tags = prompt('Tags', last_tags).split(',').map((t) => t.trim());
     if (tags == null) return;
     last_tags = tags.join(', ');
@@ -135,9 +136,10 @@ function highlightText() {
       href: cleanUrl(window.location.href),
       title: document.title,
       time: +new Date(),
-      text: text,
-      html: html,
-      tags: tags
+      text,
+      html,
+      note,
+      tags,
     };
     post(data);
   }
@@ -182,7 +184,7 @@ const marketingRegex =  /(utm_.+|mc_.+|cmpid|truid|CMP)/;
 function cleanUrl(url) {
   url = new URL(url);
   let toDelete = new Set();
-  for (let entry of url.searchParams) { 
+  for (let entry of url.searchParams) {
     let [key, val] = entry;
     if (marketingRegex.test(key)) {
       toDelete.add(key);
