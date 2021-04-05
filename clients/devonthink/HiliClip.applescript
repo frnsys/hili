@@ -14,6 +14,7 @@ end replace_chars
 tell application id "DNtp"
   try
     set theDoc to the content record of think window 1
+    set theTitle to ((the name without extension of theDoc) as string)
     set theRefURL to the reference URL of theDoc as string
     set thePage to ((the current page of think window 1) as string)
     set theUrl to theRefURL & "?page=" & (thePage as string)
@@ -35,13 +36,16 @@ tell application id "DNtp"
     set theQuote to my replace_chars(theQuotedText, "\\n", "\\\\n")
 
     do shell script "touch /tmp/args.txt"
-    do shell script "echo " & quoted form of theQuote & " > /tmp/args.txt"
+    do shell script "echo " & quoted form of theTitle & " > /tmp/args.txt"
+    do shell script "echo '*--STARTQUOTE--*' >> /tmp/args.txt"
+    do shell script "echo " & quoted form of theQuote & " >> /tmp/args.txt"
     do shell script "echo '*--ENDQUOTE--*' >> /tmp/args.txt"
     do shell script "echo " & quoted form of theNote & " >> /tmp/args.txt"
     do shell script "echo " & quoted form of theTags & " >> /tmp/args.txt"
     do shell script "echo " & quoted form of theUrl & " >> /tmp/args.txt"
 
-    do shell script "cd /Users/lachlankermode/code/pkb/hili/clients/python && python3 clipli.py > /tmp/hili_clip_log.txt"
+    (* NOTE: change the following line to suit your system *)
+    do shell script "cd /absolute/path/to/hili/clients/python && URL='http://localhost:8888' python3 clip.py > /tmp/hili_clip_log.txt"
 
 	on error error_message number error_number
 		if the error_number is not -128 then display alert "DEVONthink Pro" message error_message as warning
