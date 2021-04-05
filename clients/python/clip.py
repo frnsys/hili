@@ -83,7 +83,7 @@ def run():
     clip = {
         "time": tm,
         "title": title,
-        "quote": quote,
+        "text": quote,
         "note": note,
         "tags": tags,
         "href": url,
