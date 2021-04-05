@@ -63,22 +63,30 @@ def run():
     tm = int(round(time.time() * 1000))
 
     idx = 0
+    title = ""
+    while data[idx] != "*--STARTQUOTE--*\n" and idx < len(data):
+        title += data[idx]
+        idx += 1
+
+    idx += 1 # skip STARTQUOTE
     quote = ""
     while data[idx] != "*--ENDQUOTE--*\n" and idx < len(data):
         quote += data[idx]
         idx += 1
-    idx += 1
+    idx += 1 # skip ENDQUOTE
 
     note = data[idx].rstrip("\n").strip()
     tags = data[idx + 1].rstrip("\n").strip().split(",")
+    if len(tags) == 1 and tags[0] == "": tags = []
     url = data[idx + 2].rstrip("\n").strip()
 
     clip = {
         "time": tm,
+        "title": title,
         "quote": quote,
         "note": note,
         "tags": tags,
-        "href": url
+        "href": url,
     }
 
     attempt_clip(clip)
