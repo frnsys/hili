@@ -17,10 +17,21 @@ parser.add_argument('FILE', type=str, help='File to save received data')
 parser.add_argument('UPLOAD_DIR', type=str, help='Directory to save uploaded files')
 parser.add_argument('-p', '--port', type=int, dest='PORT', default=8888, help='Port for server')
 parser.add_argument('-k', '--key', type=str, dest='KEY', default=None, help='Secret key to authenticate clients')
+parser.add_argument('-o', '--key-overrides', type=str, dest='OVERRIDES', default=None, help='Key overrides for clips sent to server in the format "original1:new1;original2:new2"')
 args = parser.parse_args()
 
-def index_with_fallback(obj, fst, snd):
-    return obj.get(fst) if obj.get(fst) is not None else obj.get(snd)
+def idx(obj, base, overrides):
+    key = base
+    for override in overrides:
+        a,b = override.split(":")
+        if a == base:
+            key = b
+    return obj.get(key) if obj.get(key) is not None else obj.get(base)
+
+overrides = []
+if args.OVERRIDES:
+    overrides = args.OVERRIDES.split(";")
+    overrides = [x for x in overrides if len(x.split(":")) == 2]
 
 
 class JSONRequestHandler(BaseHTTPRequestHandler):
@@ -124,15 +135,14 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
 
         grouped = defaultdict(list)
         for d in data:
-            grouped[d['href']].append(d)
+            grouped[idx(d, 'href', overrides)].append(d)
 
-        for href, group in sorted(grouped.items(), key=lambda g: -max([d['time'] for d in g[1]])):
+        for href, group in sorted(grouped.items(), key=lambda g: -max([idx(d, 'time', overrides) for d in g[1]])):
             html.append('''
                 <article>
                     <h4><a href="{href}">{title}</a></h4>'''.format(href=href, title=group[0].get('title')))
             for d in group:
                 if 'file' in d:
-                    # fname = d['file']['name']
                     html.append('''
                         <div class="highlight">
                             <img src="{src}">
@@ -140,10 +150,9 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
                             <div class="tags"><em>{tags}</em></div>
                         </div>
                     '''.format(
-                        # src=os.path.join(args.UPLOAD_DIR, fname),
-                        src=d['file']['src'],
-                        text=index_with_fallback(d, 'text', 'note'),
-                        tags=', '.join(d['tags'])
+                        src=idx(d, 'file', overrides)['src'],
+                        text=idx(d, 'text', overrides),
+                        tags=', '.join(idx(d, 'tags', overrides))
                     ))
                 else:
                     html.append('''
@@ -153,9 +162,9 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
                             <div class="tags"><em>{tags}</em></div>
                         </div>
                     '''.format(
-                        html=index_with_fallback(d, 'html', 'quote'),
-                        note=index_with_fallback(d, 'text', 'note'),
-                        tags=', '.join(d['tags'])
+                        html=idx(d, 'html', overrides),
+                        note=idx(d, 'note', overrides),
+                        tags=', '.join(idx(d, 'tags', overrides))
                     ))
             html.append('</article>')
 
