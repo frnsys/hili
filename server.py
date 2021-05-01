@@ -42,9 +42,9 @@ rss_meta = {
     'description': 'highlights',
 }
 rss_mapping = {
-    'link': lambda i: i['href'],
-    'title': lambda i: i['title'],
-    'description': lambda i: i['text'],
+    'link': lambda i: idx(i, 'href', overrides),
+    'title': lambda i: idx(i, 'html', overrides),
+    'description': lambda i: idx(i, 'text', overrides),
     'pubDate': lambda i: utils.format_datetime(datetime.fromtimestamp(i['time']/1000))
 }
 
@@ -106,7 +106,7 @@ def gen_html(items):
             <body>''']
 
     grouped = defaultdict(list)
-    for d in data:
+    for d in items:
         grouped[idx(d, 'href', overrides)].append(d)
 
     for href, group in sorted(grouped.items(), key=lambda g: -max([idx(d, 'time', overrides) for d in g[1]])):
